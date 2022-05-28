@@ -1,0 +1,36 @@
+BIN = bin
+OUT = out
+SRC = src
+
+CONS=../upduino.pcf
+REPORT=report.json
+
+TOP ?= top
+
+FILES := $(wildcard $(SRC)/*.v)
+FILES += $(wildcard $(SRC)/*.sv)
+
+all: $(OUT)/$(TOP).bin
+
+clean:
+	rm -rf $(OUT) $(BIN)
+
+prog: $(OUT)/$(TOP).bin
+	iceprog $<
+
+$(BIN):
+	mkdir $(BIN)
+$(OUT):
+	mkdir $(OUT)
+
+$(BIN)/$(TOP).json: $(FILES) | $(BIN)
+	yosys -p 'read_verilog -defer -DTOP=$(TOP) -noautowire $^; hierarchy -top $(TOP); synth_ice40 -top $(TOP) -json $@'
+
+$(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT)
+	nextpnr-ice40 --report $(OUT)/$(REPORT) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json
+
+$(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc $(OUT)
+	icepack $< $@
+
+.PHONY: all clean prog
+.SILENT: $(BIN) $(OUT)
