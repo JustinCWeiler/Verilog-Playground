@@ -5,10 +5,11 @@ module dffsre #(parameter WIDTH=1) (
 );
 
 	always @(posedge clk)
-		if (r)
-			q <= {WIDTH{1'b0}};
-		else if (e)
-			q <= d;
+		if (e)
+			if (r)
+				q <= {WIDTH{1'b0}};
+			else
+				q <= d;
 		else
 			q <= q;
 
