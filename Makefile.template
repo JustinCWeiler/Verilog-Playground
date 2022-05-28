@@ -9,6 +9,8 @@ TOP ?= top
 
 FILES := $(wildcard $(SRC)/*.v)
 FILES += $(wildcard $(SRC)/*.sv)
+FILES += $(wildcard ../lib/*.v)
+FILES += $(wildcard ../lib/*.sv)
 
 all: $(OUT)/$(TOP).bin
 
