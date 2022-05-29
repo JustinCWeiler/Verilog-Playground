@@ -10,6 +10,6 @@ module counter #(parameter COUNT=1) (
 	assign next_n = n >= COUNT ? {WIDTH{1'd0}} : n + 1'd1;
 	assign t = n >= COUNT;
 
-	dffar flop (.d(next_n), .q(n), .clk(clk), .r(r));
+	dffar #(WIDTH) flop (.d(next_n), .q(n), .clk(clk), .r(r));
 
 endmodule
