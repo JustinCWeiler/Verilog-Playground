@@ -2,8 +2,8 @@ module top (
 	output wire led_red, led_green, led_blue
 );
 
-	wire clk;
-	SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(clk));
+	wire sys_clk;
+	SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(sys_clk));
 
 	wire led_r, led_g, led_b;
 
