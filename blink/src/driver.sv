@@ -1,12 +1,12 @@
 module driver (
-	input wire clk,
-	output wire r, g, b
+	input logic clk,
+	output logic r, g, b
 );
 
-	wire on;
+	logic on;
 	assign {r, g, b} = {3{on}};
 
-	wire t;
+	logic t;
 	counter #(.COUNT(48_000_000)) c (.clk(clk), .r(1'b0), .t(t));
 
 	dffe flop (.d(~on), .q(on), .e(t), .clk(clk));

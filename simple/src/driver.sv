@@ -1,5 +1,5 @@
 module driver (
-	output wire r, g, b
+	output logic r, g, b
 );
 
 	assign {r, g, b} = 3'b111;

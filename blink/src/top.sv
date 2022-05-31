@@ -1,11 +1,11 @@
 module top (
-	output wire led_red, led_green, led_blue
+	output logic led_red, led_green, led_blue
 );
 
-	wire sys_clk;
+	logic sys_clk;
 	SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(sys_clk));
 
-	wire led_r, led_g, led_b;
+	logic led_r, led_g, led_b;
 
 	driver dut (.clk(sys_clk), .r(led_r), .g(led_g), .b(led_b));
 

@@ -38,7 +38,7 @@ $(LOG):
 	mkdir $(LOG)
 
 $(BIN)/$(TOP).json: $(FILES) | $(BIN) $(LOG)
-	yosys -p 'read_verilog -defer $^; synth_ice40 -top $(TOP) -json $@' > $(LOG)/$(YOSYS_LOG)
+	yosys -p 'read_verilog -sv -defer $^; synth_ice40 -top $(TOP) -json $@' > $(LOG)/$(YOSYS_LOG)
 
 $(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT) $(LOG)
 	nextpnr-ice40 --detailed-timing-report --report $(BIN)/$(REPORT_RAW) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json 2> $(LOG)/$(NEXTPNR_LOG)
@@ -49,7 +49,7 @@ $(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT) $(LOG)
 
 %.svg: $(FILES) | $(LOG)
 	rm -f *.svg
-	yosys -p 'read_verilog -defer $^; synth -top $(basename $@); write_json $(basename $@).json' > $(LOG)/$(YOSYS_LOG)
+	yosys -p 'read_verilog -sv -defer $^; synth -top $(basename $@); write_json $(basename $@).json' > $(LOG)/$(YOSYS_LOG)
 	netlistsvg $(basename $@).json -o $@
 	rm -f $(basename $@).json
 
