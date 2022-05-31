@@ -1,5 +1,8 @@
 *.asc
 *.json
 *.bin
+*.log
+*.svg
 **/out/*
 **/bin/*
+**/log/*

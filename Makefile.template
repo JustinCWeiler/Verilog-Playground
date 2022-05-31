@@ -1,9 +1,15 @@
 BIN = bin
 OUT = out
 SRC = src
+LOG = log
 
 CONS=../upduino.pcf
-REPORT=report.json
+REPORT_NAME=report
+REPORT=$(REPORT_NAME).json
+REPORT_RAW=$(REPORT_NAME)_raw.json
+
+YOSYS_LOG=yosys.log
+NEXTPNR_LOG=nextpnr.log
 
 TOP ?= top
 
@@ -16,6 +22,7 @@ all: bit
 synth: $(BIN)/$(TOP).json
 impl: $(BIN)/$(TOP).asc
 bit: $(OUT)/$(TOP).bin
+report: $(OUT)/$(REPORT)
 
 clean:
 	rm -rf $(OUT) $(BIN) *.svg
@@ -27,19 +34,22 @@ $(BIN):
 	mkdir $(BIN)
 $(OUT):
 	mkdir $(OUT)
+$(LOG):
+	mkdir $(LOG)
 
-$(BIN)/$(TOP).json: $(FILES) | $(BIN)
-	yosys -p 'read_verilog -defer $^; synth_ice40 -top $(TOP) -json $@'
+$(BIN)/$(TOP).json: $(FILES) | $(BIN) $(LOG)
+	yosys -p 'read_verilog -defer $^; synth_ice40 -top $(TOP) -json $@' > $(LOG)/$(YOSYS_LOG)
 
-$(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT)
-	nextpnr-ice40 --report $(OUT)/$(REPORT) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json
+$(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT) $(LOG)
+	nextpnr-ice40 --detailed-timing-report --report $(BIN)/$(REPORT_RAW) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json 2> $(LOG)/$(NEXTPNR_LOG)
+	cat $(BIN)/$(REPORT_RAW) | python -mjson.tool > $(OUT)/$(REPORT)
 
-$(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT)
+$(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT) $(LOG)
 	icepack $< $@
 
-%.svg: $(FILES)
+%.svg: $(FILES) | $(LOG)
 	rm -f *.svg
-	yosys -p 'read_verilog -defer $^; synth -top $(basename $@); write_json $(basename $@).json'
+	yosys -p 'read_verilog -defer $^; synth -top $(basename $@); write_json $(basename $@).json' > $(LOG)/$(YOSYS_LOG)
 	netlistsvg $(basename $@).json -o $@
 	rm -f $(basename $@).json
 
