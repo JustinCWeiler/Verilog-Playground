@@ -1,6 +1,6 @@
-module dffsre #(parameter WIDTH=1) (
-	input logic [WIDTH-1:0] d,
-	output logic [WIDTH-1:0] q,
+module dffsre #(parameter N=1) (
+	input logic [N-1:0] d,
+	output logic [N-1:0] q,
 	input logic clk, r, e
 );
 
