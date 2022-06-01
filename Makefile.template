@@ -27,7 +27,7 @@ report: $(OUT)/$(REPORT)
 clean:
 	rm -rf $(OUT) $(BIN) *.svg
 
-prog: bit
+prog: $(OUT)/$(TOP).bin
 	iceprog $<
 
 $(BIN):
