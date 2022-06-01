@@ -6,7 +6,7 @@ module dffare #(parameter WIDTH=1) (
 
 	always_ff @(posedge clk, posedge r)
 		if (r)
-			q <= {WIDTH{1'b0}};
+			q <= '0;
 		else if (e)
 			q <= d;
 		else

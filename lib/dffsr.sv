@@ -6,7 +6,7 @@ module dffsr #(parameter WIDTH=1) (
 
 	always_ff @(posedge clk)
 		if (r)
-			q <= {WIDTH{1'b0}};
+			q <= '0;
 		else
 			q <= d;
 
