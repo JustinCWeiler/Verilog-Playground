@@ -25,7 +25,7 @@ bit: $(OUT)/$(TOP).bin
 report: $(OUT)/$(REPORT)
 
 clean:
-	rm -rf $(OUT) $(BIN) *.svg
+	rm -rf $(OUT) $(BIN) $(LOG) *.svg
 
 prog: $(OUT)/$(TOP).bin
 	iceprog $<
@@ -48,7 +48,6 @@ $(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT) $(LOG)
 	icepack $< $@
 
 %.svg: $(FILES) | $(LOG)
-	rm -f *.svg
 	yosys -p 'read_verilog -sv -defer $^; synth -top $(basename $@); write_json $(basename $@).json' > $(LOG)/$(YOSYS_LOG)
 	netlistsvg $(basename $@).json -o $@
 	rm -f $(basename $@).json
