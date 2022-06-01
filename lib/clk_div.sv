@@ -1,4 +1,4 @@
-module clk_div #(parameter CLK_IN=48_000_000, parameter CLK_OUT=1) (
+module clk_div #(parameter CLK_IN=48_000_000, parameter CLK_OUT=24_000_000, parameter MULT=1) (
 	input logic clk_in,
 	output logic clk_out
 );
@@ -11,7 +11,7 @@ module clk_div #(parameter CLK_IN=48_000_000, parameter CLK_OUT=1) (
 		.e(tick)
 	);
 
-	localparam AMOUNT = CLK_IN / CLK_OUT;
+	localparam AMOUNT = CLK_IN / CLK_OUT / 2 * MULT;
 
 	counter #(AMOUNT) count (
 		.clk(clk_in),

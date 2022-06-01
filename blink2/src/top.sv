@@ -4,6 +4,7 @@ module top (
 
 	logic sys_clk;
 	SB_HFOSC u_SB_HFOSC (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(sys_clk));
+	defparam u_SB_HFOSC.CLKHF_DIV = "0b00";
 
 	logic led_r, led_g, led_b;
 
