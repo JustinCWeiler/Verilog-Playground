@@ -18,6 +18,10 @@ FILES += $(wildcard $(SRC)/*.sv)
 FILES += $(wildcard ../lib/*.v)
 FILES += $(wildcard ../lib/*.sv)
 
+FILES_SVG := $(FILES)
+FILES_SVG += $(wildcard ../lib/upduino_stubs/*.v)
+FILES_SVG += $(wildcard ../lib/upduino_stubs/*.sv)
+
 all: bit
 synth: $(BIN)/$(TOP).json
 impl: $(BIN)/$(TOP).asc
@@ -47,7 +51,7 @@ $(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT)
 $(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT) $(LOG)
 	icepack $< $@
 
-%.svg: $(FILES) | $(LOG)
+%.svg: $(FILES_SVG) | $(LOG)
 	yosys -p 'read_verilog -sv -defer $^; synth -top $(basename $@); write_json $(basename $@).json' | tee $(LOG)/$(YOSYS_LOG)
 	netlistsvg $(basename $@).json -o $@
 	rm -f $(basename $@).json
