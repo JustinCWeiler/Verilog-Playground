@@ -38,10 +38,10 @@ $(LOG):
 	mkdir $(LOG)
 
 $(BIN)/$(TOP).json: $(FILES) | $(BIN) $(LOG)
-	yosys -p 'read_verilog -sv -defer $^; synth_ice40 -top $(TOP) -json $@' | tee $(LOG)/$(YOSYS_LOG)
+	yosys -p 'read_verilog -sv -defer $^; synth_ice40 -top $(TOP) -json $@' 2>&1 | tee $(LOG)/$(YOSYS_LOG)
 
 $(BIN)/$(TOP).asc $(OUT)/$(REPORT) &: $(CONS) $(BIN)/$(TOP).json | $(BIN) $(OUT) $(LOG)
-	nextpnr-ice40 --detailed-timing-report --report $(BIN)/$(REPORT_RAW) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json | tee $(LOG)/$(NEXTPNR_LOG)
+	nextpnr-ice40 --detailed-timing-report --report $(BIN)/$(REPORT_RAW) --up5k --pcf $(CONS) --package sg48 --asc $(BIN)/$(TOP).asc --json $(BIN)/$(TOP).json 2>&1 | tee $(LOG)/$(NEXTPNR_LOG)
 	cat $(BIN)/$(REPORT_RAW) | python3 -mjson.tool > $(OUT)/$(REPORT)
 
 $(OUT)/$(TOP).bin: $(BIN)/$(TOP).asc | $(OUT) $(LOG)
