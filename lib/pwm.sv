@@ -3,27 +3,24 @@ module pwm #(
 )
 (
 	input clk,
-	input [WIDTH-1:0] off_time,
-	input [WIDTH-1:0] on_time,
+	input [WIDTH-1:0] off_cyc,
+	input [WIDTH-1:0] on_cyc,
 	input set_time,
 
 	output logic out
 );
 
-	localparam ZERO = {WIDTH{1'b0}};
-	localparam ONE = {{WIDTH-1{1'b0}}, 1'b1};
-
-	logic [WIDTH-1:0] _off_time;
-	logic [WIDTH-1:0] _on_time;
+	logic [WIDTH-1:0] _off_cyc;
+	logic [WIDTH-1:0] _on_cyc;
 	logic [WIDTH-1:0] counter;
 
 	logic state;
-	logic reset_counter = counter == (state ? _on_time : _off_time);
+	logic reset_counter = counter == (state ? _on_cyc : _off_cyc) - 1;
 
 	always_comb begin
-		if (_off_time == ZERO)
+		if (_off_cyc == 0)
 			out = 1'b1;
-		else if (_on_time == ZERO)
+		else if (_on_cyc == 0)
 			out = 1'b0;
 		else
 			out = state;
@@ -31,22 +28,23 @@ module pwm #(
 
 	dffe #(2*WIDTH) set_time_flop (
 		.clk(clk),
-		.d({off_time, on_time}),
-		.q({_off_time, _on_time}),
+		.d({off_cyc, on_cyc}),
+		.q({_off_cyc, _on_cyc}),
 		.e(set_time)
 	);
 
 	dffsr #(WIDTH) counter_flop (
 		.clk(clk),
-		.d(counter + ONE),
+		.d(counter + 1),
 		.q(counter),
-		.r(reset_counter)
+		.r(reset_counter | set_time)
 	);
 
-	dffe state_flop (
+	dffsre state_flop (
 		.clk(clk),
 		.d(~state),
 		.q(state),
+		.r(set_time),
 		.e(reset_counter)
 	);
 
